@@ -4,28 +4,27 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.jetpackcomposenote.feature_note.presentation.action_note.NoteActionScreen
+import com.example.jetpackcomposenote.feature_note.presentation.notes_screen.NotesScreen
+import com.example.jetpackcomposenote.feature_note.presentation.util.Screen
 import com.example.jetpackcomposenote.ui.theme.JetpackComposeNoteTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
 
+    @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen().apply {
@@ -35,21 +34,44 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             JetpackComposeNoteTheme {
-                Greeting(name = "World")
+                Surface(
+                    color = MaterialTheme.colors.background
+                ) {
+                    val navController = rememberNavController()
+                    NavHost(
+                        navController = navController,
+                        startDestination = Screen.NotesScreen.route
+                    ){
+                        composable(route = Screen.NotesScreen.route){
+                            NotesScreen(navController = navController)
+                        }
+
+                        composable(
+                            route = Screen.ActionNoteScreen.route +
+                                "?noteId={noteId}&noteColor={noteColor}",
+                            arguments = listOf(
+                                navArgument(name = "noteId"
+                                ){
+                                    type = NavType.IntType
+                                    defaultValue = -1
+                                },
+                                navArgument(name = "noteColor"
+                                ){
+                                    type = NavType.IntType
+                                    defaultValue = -1
+                                }
+                            )
+
+                        ){
+                            val color = it.arguments?.getInt("noteColor") ?: -1
+                            NoteActionScreen(
+                                navController = navController,
+                                noteColor = color
+                            )
+                        }
+                    }
+                }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    JetpackComposeNoteTheme {
-        Greeting("Android")
     }
 }
