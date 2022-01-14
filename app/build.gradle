@@ -19,6 +19,8 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+//        buildFeatures 'String', 'API_BASE_URL', '"https://www.google.com/"'
     }
 
     buildTypes {
@@ -88,4 +90,13 @@ dependencies {
 
     // Kotlin Extensions and Coroutines support for Room
     implementation "androidx.room:room-ktx:2.3.0"
+
+    //OkHttp
+    implementation 'com.squareup.okhttp3:okhttp:4.2.2'
+    implementation "com.squareup.okhttp3:logging-interceptor:4.2.2"
+
+    //Retrofit2
+    implementation "com.squareup.retrofit2:retrofit:2.6.2"
+    implementation "com.squareup.retrofit2:converter-gson:2.6.2"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:2.6.2"
 }
